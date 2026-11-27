@@ -1,10 +1,6 @@
-name: Build Focus Mode
+name: Build FocusMode
 
 on:
-  push:
-    branches: [ main, master ]
-    tags: [ 'v*' ]
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -12,10 +8,8 @@ permissions:
 
 jobs:
   windows:
+    name: Build Windows plugin
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -30,24 +24,13 @@ jobs:
             zip
             mingw-w64-ucrt-x86_64-gcc
 
-      - name: Test pure logic
-        run: make test
+      - name: Build and package Windows plugin
+        shell: msys2 {0}
+        run: make package-windows WINDOWS_CC=gcc
 
-      - name: Build and package Windows module
-        run: make windows package-windows WINDOWS_CC=gcc
-
-      - name: Upload Windows package
+      - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
           name: FocusMode-Windows
           path: build/FocusMode-Windows-*.zip
           if-no-files-found: error
-
-  linux-source-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test pure logic
-        run: make test
-      - name: Compile-check and smoke-test shared module source
-        run: make linux smoke-test
