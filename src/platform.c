@@ -48,6 +48,5 @@ bool bc_thread_start(BcThread *t, void (*fn)(void *), void *arg) {
     return t->started;
 }
 void bc_thread_join(BcThread *t, unsigned timeout_ms) { (void)timeout_ms; if (t->started) { pthread_join(t->handle, NULL); t->started = false; } }
-
 bool bc_key_down(unsigned vk) { (void)vk; return false; }
 #endif
