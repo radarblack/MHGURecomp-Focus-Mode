@@ -101,7 +101,6 @@ static void focus_view_builder(BcCpu *cpu) {
                 float yaw = atan2f(dx, dz) + g_config.yaw_offset_degrees * (FM_PI / 180.0f);
                 float q[4];
                 fm_quaternion_from_yaw(yaw, q);
-                /* MHGU player rotation is an XYZW quaternion at player + 0x50. */
                 for (unsigned i = 0; i < 4; ++i) fm_stf(rotation + 4u * i, q[i]);
             }
         } else if (g_logged_bad_pose < 3u) {
@@ -132,7 +131,6 @@ bool fm_focus_install(void) {
         return false;
     }
     if (g_host.fnhook_get(FM_FN_VIEW_BUILDER) != g_hook_id) {
-        /* Another hook may have won the race; never clear a hook we do not own. */
         g_hook_id = 0;
         if (g_mh.log) g_mh.log("[focusmode] hook verification failed; hook rolled back\n");
         return false;
