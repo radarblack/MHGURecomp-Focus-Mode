@@ -39,7 +39,6 @@ package-windows: windows
 	mkdir -p $(OUT)/pkg-windows/engine_modules/$(NAME)
 	cp $(OUT)/windows/$(NAME).dll $(OUT)/pkg-windows/engine_modules/$(NAME)/
 	cp config/$(NAME).ini $(OUT)/pkg-windows/engine_modules/$(NAME)/
-	cp INSTALL.txt $(OUT)/pkg-windows/
 	cd $(OUT)/pkg-windows && zip -qr ../$(NAME)-Windows-$(VERSION).zip .
 clean:
 	rm -rf $(OUT)
