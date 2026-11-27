@@ -1,0 +1,53 @@
+name: Build Focus Mode
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up UCRT64 toolchain
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            make
+            zip
+            mingw-w64-ucrt-x86_64-gcc
+
+      - name: Test pure logic
+        run: make test
+
+      - name: Build and package Windows module
+        run: make windows package-windows WINDOWS_CC=gcc
+
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: FocusMode-Windows
+          path: build/FocusMode-Windows-*.zip
+          if-no-files-found: error
+
+  linux-source-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test pure logic
+        run: make test
+      - name: Compile-check and smoke-test shared module source
+        run: make linux smoke-test
